@@ -22,5 +22,7 @@
         "sourceType": "module"
     },
     "rules": {
+        "semi": [0],
+        "indent": "off"
     }
 }
