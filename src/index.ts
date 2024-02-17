@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { type NextFunction, type Request, type Response } from 'express'
 import * as works from './controllers/works'
 // import birds from './bird'
 import cors from 'cors'
@@ -23,6 +23,14 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
+// 处理全局异常
+/*
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  const httpStatus = error.httpStatusCode || 500;
+  res.status(httpStatus).json({message: error.message})
+  next()
+}) */
+
 // 允许跨域请求
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:8080', 'http://localhost:8000'],
@@ -32,15 +40,11 @@ app.use(cors({
 app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.json({ limit: '10mb' }))
 
-// 登陆
 app.use(session({
-  secret: '888888',
+  secret: 'your-secret-key', // 替换为您自己的秘密密钥
   resave: false,
   saveUninitialized: true
 }))
-
-app.post('/users/login', users.login)
-app.post('/users/login', users.logout)
 
 // const router = express.Router()
 
@@ -48,7 +52,7 @@ app.post('/users/login', users.logout)
 app.use('/uploads', express.static(path.join(__dirname + '../uploads')))
 
 // 上传文件
-app.post('/files/upload', upload.single('file'), files.upload)
+app.post('/files/upload', checkLogin, upload.single('file'), files.upload)
 
 /*
 // 路由定义，get 方法，路径为根目录路径（'/'），回调函数是打印通过 res.send 输出 Hello World!
@@ -67,11 +71,38 @@ app.delete('/works/:id', works.deleteWork)
 /* 练习2 方法2
 app.use('/birds', birds) */
 
-app.get('/works', works.getWorks)
+// app.get('/works', checkLogin, works.getWorks)
 app.get('/works/pages', works.getWorksByPages)
 app.get('/works/:id', works.getWorkById)
 
 app.post('/works', checkLogin, works.createWork)
+app.put('/works/:id', checkLogin, works.updateWork)
+
+// 点赞
+app.put('/works/:id/like', works.like)
+
+// 登陆
+app.post('/users/login', users.login)
+app.post('/users/logout', checkLogin, users.logout)
+
+app.post('/users', users.createOne)
+app.get('/users', checkLogin, users.getAll)
+app.get('/users/:id', checkLogin, users.getOneById)
+app.put('/users/:id', checkLogin, users.updateOneById)
+app.delete('/users/:id', checkLogin, users.deleteOneById)
+
+
+// 处理未定义接口
+app.use((req, res) => {
+  res.status(404).json({message: `接口未定义: ${req.originalUrl}`})
+})
+
+// 处理全局异常 写在所有路由定义的后面
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  const httpStatus = error.httpStatusCode || 500;
+  res.status(httpStatus).json({message: error.message});
+  next();
+});
 
 app.listen(3000, () => {
   console.log('示例应用正在监听 3000 端口 !')
