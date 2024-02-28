@@ -48,8 +48,8 @@ app.use(session({
 
 // const router = express.Router()
 
-// 将"uploads"目录下的资源公开为静态文件
-app.use('/uploads', express.static(path.join(__dirname + '../uploads')))
+// 将 "uploads" 目录下的资源公开为静态文件
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
 // 上传文件
 app.post('/files/upload', checkLogin, upload.single('file'), files.upload)
@@ -84,6 +84,7 @@ app.put('/works/:id/like', works.like)
 // 登陆
 app.post('/users/login', users.login)
 app.post('/users/logout', checkLogin, users.logout)
+app.get('/users/currentUser', checkLogin, users.currentUser)
 
 app.post('/users', users.createOne)
 app.get('/users', checkLogin, users.getAll)
