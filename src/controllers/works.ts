@@ -145,8 +145,8 @@ export const getWorkById = async (req: Request, res: Response): Promise<void> =>
         views: work.views + 1
       }
     })
-    res.json(toFeObj(work))
   }
+  res.json(toFeObj(work))
   /*
   setTimeout(() => {
     const item = worksMokcData.find(item => Number(item.id) === Number(id))
