@@ -214,7 +214,7 @@ export const like = async (req: Request, res: Response): Promise<void> => {
       id: work.id
     },
     data: {
-      likes: action === 'unlike' ? work.likes - 1 : work.likes + 1
+      likes: action === 'unlike' ? (work.likes > 0 ? work.likes - 1 : 0) : work.likes + 1
     }
   })
 
