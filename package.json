@@ -7,7 +7,14 @@
     "dev": "ts-node-dev --files ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc",
+    "pm2:start": "pm2 start dist/index.js --name mydemo",
+    "pm2:stop": "pm2 stop mydemo",
+    "pm2:reload": "pm2 reload mydemo",
+    "pm2:delete": "pm2 delete mydemo",
+    "pm2:list": "pm2 list"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -26,6 +33,7 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "prisma": "^5.9.1",
+    "rimraf": "^5.0.5",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   },
