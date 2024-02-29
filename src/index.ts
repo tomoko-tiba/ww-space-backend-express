@@ -46,13 +46,13 @@ app.use(session({
   saveUninitialized: true
 }))
 
-// const router = express.Router()
+const router = express.Router()
 
 // 将 "uploads" 目录下的资源公开为静态文件
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
+router.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
 // 上传文件
-app.post('/files/upload', checkLogin, upload.single('file'), files.upload)
+router.post('/files/upload', checkLogin, upload.single('file'), files.upload)
 
 /*
 // 路由定义，get 方法，路径为根目录路径（'/'），回调函数是打印通过 res.send 输出 Hello World!
@@ -72,26 +72,27 @@ app.delete('/works/:id', works.deleteWork)
 app.use('/birds', birds) */
 
 // app.get('/works', checkLogin, works.getWorks)
-app.get('/works/pages', works.getWorksByPages)
-app.get('/works/:id', works.getWorkById)
+router.get('/works/pages', works.getWorksByPages)
+router.get('/works/:id', works.getWorkById)
 
-app.post('/works', checkLogin, works.createWork)
-app.put('/works/:id', checkLogin, works.updateWork)
+router.post('/works', checkLogin, works.createWork)
+router.put('/works/:id', checkLogin, works.updateWork)
 
 // 点赞
-app.put('/works/:id/like', works.like)
+router.put('/works/:id/like', works.like)
 
 // 登陆
-app.post('/users/login', users.login)
-app.post('/users/logout', checkLogin, users.logout)
-app.get('/users/currentUser', checkLogin, users.currentUser)
+router.post('/users/login', users.login)
+router.post('/users/logout', checkLogin, users.logout)
+router.get('/users/currentUser', checkLogin, users.currentUser)
 
-app.post('/users', users.createOne)
-app.get('/users', checkLogin, users.getAll)
-app.get('/users/:id', checkLogin, users.getOneById)
-app.put('/users/:id', checkLogin, users.updateOneById)
-app.delete('/users/:id', checkLogin, users.deleteOneById)
+router.post('/users', users.createOne)
+router.get('/users', checkLogin, users.getAll)
+router.get('/users/:id', checkLogin, users.getOneById)
+router.put('/users/:id', checkLogin, users.updateOneById)
+router.delete('/users/:id', checkLogin, users.deleteOneById)
 
+app.use('/backend', router)
 
 // 处理未定义接口
 app.use((req, res) => {

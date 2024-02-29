@@ -36,7 +36,8 @@ export const logout = (req: Request, res: Response): void => {
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   const users = await prisma.user.findMany({
-    select: userFields
+    select: userFields,
+    orderBy: { id: 'desc' }
   })
   res.json(users)
 }
@@ -128,4 +129,8 @@ export const deleteOneById = async (req: Request, res: Response): Promise<void> 
     select: userFields
   })
   res.json(deleteUser)
+}
+
+export const currentUser = async (req: Request, res: Response): Promise<void> => {
+  res.json(res.locals.currentUser)
 }
