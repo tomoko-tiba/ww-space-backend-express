@@ -44,10 +44,6 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 
 export const getOneById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
-  if (+id === req.session.userId) {
-    res.status(400).json({ message: '不能删除自己' })
-    return
-  }
   const user = await prisma.user.findUnique({
     where: {
       id: +id
@@ -122,6 +118,11 @@ export const updateOneById = async (req: Request, res: Response): Promise<void> 
 
 export const deleteOneById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
+  if (+id === req.session.userId) {
+    res.status(400).json({ message: '不能删除自己' })
+    return
+  }
+
   const deleteUser = await prisma.user.delete({
     where: {
       id: +id
