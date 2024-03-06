@@ -4,3 +4,4 @@ uploads/*
 prisma/dev.db-journal
 prisma/dev.db
 dist
+backup

@@ -22,14 +22,22 @@ model User {
 }
 
 model Work {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  imgSrc      String
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category{
   id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  imgSrc    String
-  likes     Int      @default(0)
-  views     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  name      String   @unique
+  works     Work[]
 }

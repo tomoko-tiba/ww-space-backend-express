@@ -1,0 +1,1 @@
+scp -r ali-hk:~/node_server_dribble_clone/uploads ./backup/uploads

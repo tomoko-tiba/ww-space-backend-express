@@ -20,6 +20,12 @@ type WorkByQuery = {
   createdAt: Date
   updatedAt: Date
   userId: number
+  categoryId: number | null
+} & {
+  category?: {
+    id: number
+    name: string
+} | null
 }
 
 // 与前端约定的参数，类型一般叫做“VO”，View Object 的意思
@@ -34,6 +40,8 @@ interface WorkVO {
   likes: number
   views: number
   time: string
+  categoryName?: string
+  categoryId: number | null
 }
 
 const toFeObj = (o: WorkByQuery): WorkVO => {
@@ -47,7 +55,9 @@ const toFeObj = (o: WorkByQuery): WorkVO => {
     imgSrc: o.imgSrc,
     likes: o.likes,
     views: o.views,
-    time: o.createdAt.toLocaleString('zh-Hans-CN', { timeZone: 'Asia/Shanghai' })
+    time: o.createdAt.toLocaleString('zh-Hans-CN', { timeZone: 'Asia/Shanghai' }),
+    categoryName: o.category?.name,
+    categoryId: o.categoryId
   }
 }
 /*
@@ -66,19 +76,24 @@ export const getWorksByPages = async (req: Request, res: Response): Promise<void
   const page = Number(req.query.page)
   const pageSize = Number(req.query.pageSize)
   const searchText = req.query.searchText as string | undefined
+  const categoryId = req.query.categoryId as string | undefined !== undefined
+      ? Number(req.query.categoryId) : undefined
 
   if (isNaN(page) || isNaN(pageSize) || pageSize === 0) {
     res.status(400).json({ message: '分页参数错误错误' })
   }
+
+  const whereBase = { categoryId }
 
   const where = searchText != null && searchText !== ''
     ? {
         OR: [
           { title: { contains: searchText } },
           { content: { contains: searchText } }
-        ]
+        ],
+        ...whereBase
       }
-    : {}
+    : whereBase
 
   const data = await prisma.work.findMany({
     skip: (page - 1) * pageSize,
@@ -87,33 +102,17 @@ export const getWorksByPages = async (req: Request, res: Response): Promise<void
     include: {
       user: {
         select: userFields
-      }
+      },
     },
     orderBy: { createdAt: 'desc' }
   })
+
   const count = await prisma.work.count({
     where
   })
 
   res.json({ count, data: data.map(item => toFeObj(item)) })
 
-  /*
-  if (searchText !== lastSearchText) {
-    if (searchText === undefined || searchText === '') {
-      displayData = [...worksMokcData]
-    } else {
-      displayData = worksMokcData.filter(item => {
-        return item.title.toLowerCase().includes(searchText.toLowerCase())
-      })
-    }
-  }
-  lastSearchText = searchText
-
-  setTimeout(() => {
-    const count = displayData.length
-    const data = displayData.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)
-    res.json({ count, data })
-  }, 1500) */
 }
 
 // 查询单个
@@ -158,12 +157,14 @@ export const getWorkById = async (req: Request, res: Response): Promise<void> =>
 }
 
 export const createWork = async (req: Request, res: Response): Promise<void> => {
+  const categoryId = Number(req.body.categoryId)
   const work = await prisma.work.create({
     data: {
       title: req.body.title,
       content: req.body.content,
       imgSrc: req.body.imgSrc,
-      userId: res.locals.currentUser.id
+      userId: res.locals.currentUser.id,
+      categoryId: categoryId
     }
   })
   res.json(work)
@@ -171,6 +172,7 @@ export const createWork = async (req: Request, res: Response): Promise<void> => 
 
 export const updateWork = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
+  const categoryId = Number(req.body.categoryId)
   const updateWork = await prisma.work.update({
     where: {
       id: +id
@@ -179,7 +181,8 @@ export const updateWork = async (req: Request, res: Response): Promise<void> => 
       title: req.body.title,
       content: req.body.content,
       imgSrc: req.body.imgSrc,
-      userId: res.locals.currentUser.id
+      userId: res.locals.currentUser.id,
+      categoryId: categoryId
     }
   })
   res.json(updateWork)

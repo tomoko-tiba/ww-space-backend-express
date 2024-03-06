@@ -1,5 +1,6 @@
 import express, { type NextFunction, type Request, type Response } from 'express'
 import * as works from './controllers/works'
+import * as categories from './controllers/category'
 // import birds from './bird'
 import cors from 'cors'
 import session from 'express-session'
@@ -54,23 +55,6 @@ router.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 // 上传文件
 router.post('/files/upload', checkLogin, upload.single('file'), files.upload)
 
-/*
-// 路由定义，get 方法，路径为根目录路径（'/'），回调函数是打印通过 res.send 输出 Hello World!
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-// 练习1 方法1
-app.get('/works', works.getWorks)
-app.post('/works', works.createWork)
-app.get('/works/:id', works.getWorkById)
-app.put('/works/:id', works.updateWork)
-app.delete('/works/:id', works.deleteWork)
-*/
-
-/* 练习2 方法2
-app.use('/birds', birds) */
-
 // app.get('/works', checkLogin, works.getWorks)
 router.get('/works/pages', works.getWorksByPages)
 router.get('/works/:id', works.getWorkById)
@@ -86,11 +70,18 @@ router.post('/users/login', users.login)
 router.post('/users/logout', checkLogin, users.logout)
 router.get('/users/currentUser', checkLogin, users.currentUser)
 
-router.post('/users', users.createOne)
+router.post('/users', checkLogin, users.createOne)
 router.get('/users', checkLogin, users.getAll)
 router.get('/users/:id', checkLogin, users.getOneById)
 router.put('/users/:id', checkLogin, users.updateOneById)
 router.delete('/users/:id', checkLogin, users.deleteOneById)
+
+// 分类
+router.get('/categories', categories.getAll)
+router.get('/categories/:id', checkLogin, categories.getOneById)
+router.post('/categories', checkLogin, categories.createOne)
+router.put('/categories/:id', checkLogin, categories.updateOneById)
+router.delete('/categories/:id', checkLogin, categories.deleteOneById)
 
 app.use('/backend', router)
 
@@ -109,48 +100,3 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 app.listen(3000, () => {
   console.log('示例应用正在监听 3000 端口 !')
 })
-
-/*
-
-// 导入 Express 模块，并创建了一个 Express 应用
-import express, { type NextFunction, type Request, type Response } from 'express'
-import * as works from './controllers/works'
-import cors from 'cors'
-const app = express()
-
-// 允许跨域请求
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:8080']
-}))
-
-app.use(express.urlencoded({ limit: '10mb', extended: true }))
-app.use(express.json({ limit: '10mb' }))
-
-// 定义中间件
-const handleLog = function (req: Request, res: Response, next: NextFunction): void {
-  console.log('There is a requesting.')
-  next()
-}
-
-// 使用中间件
-app.use(handleLog)
-
-// 路由定义，get 方法，路径为根目录路径（'/'），回调函数是打印通过 res.send 输出 Hello World!
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-app.get('/zoos/:id/animals/:animalId', function (req, res) {
-  console.log(req.params) // { id: '1', animalId: '62' }
-  res.send(`id:${req.params.id}; animalId:${req.params.animalId}`)
-})
-
-app.get('/works', works.getWorks)
-app.get('/works/pages', handleLog, works.getWorksByPages)
-app.post('/works', works.createWork)
-app.get('/works/:id', works.getWorkById)
-
-// 在3000端口启动服务器
-app.listen(3000, () => {
-  console.log('示例应用正在监听 3000 端口 !')
-})
-*/

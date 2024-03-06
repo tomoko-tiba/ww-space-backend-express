@@ -24,5 +24,9 @@
     "rules": {
         "semi": [0],
         "indent": "off"
-    }
+    },
+    "exclude": [
+        "prisma/seed.ts"
+        // 其他文件...
+      ]
 }
