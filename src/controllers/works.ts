@@ -2,6 +2,7 @@ import { type Request, type Response } from 'express'
 // worksMokcData, { type Work } from '../mock/works'
 import prisma from '../utils/prisma'
 import { userFields } from './users'
+import { categoryFields } from './category'
 
 type WorkByQuery = {
   user: {
@@ -10,6 +11,11 @@ type WorkByQuery = {
     userIntro: string | null
     userPhoto: string | null
   }
+}& {
+  category?: {
+    id: number
+    name: string
+  } | null
 } & {
   id: number
   title: string
@@ -21,11 +27,7 @@ type WorkByQuery = {
   updatedAt: Date
   userId: number
   categoryId: number | null
-} & {
-  category?: {
-    id: number
-    name: string
-} | null
+  time: string | null
 }
 
 // 与前端约定的参数，类型一般叫做“VO”，View Object 的意思
@@ -39,9 +41,9 @@ interface WorkVO {
   imgSrc: string
   likes: number
   views: number
-  time: string
   categoryName?: string
   categoryId: number | null
+  time: string | null
 }
 
 const toFeObj = (o: WorkByQuery): WorkVO => {
@@ -55,7 +57,7 @@ const toFeObj = (o: WorkByQuery): WorkVO => {
     imgSrc: o.imgSrc,
     likes: o.likes,
     views: o.views,
-    time: o.createdAt.toLocaleString('zh-Hans-CN', { timeZone: 'Asia/Shanghai' }),
+    time: o.time,
     categoryName: o.category?.name,
     categoryId: o.categoryId
   }
@@ -103,6 +105,9 @@ export const getWorksByPages = async (req: Request, res: Response): Promise<void
       user: {
         select: userFields
       },
+      category: {
+        select: categoryFields
+      }
     },
     orderBy: { createdAt: 'desc' }
   })
@@ -126,6 +131,9 @@ export const getWorkById = async (req: Request, res: Response): Promise<void> =>
     include: {
       user: {
         select: userFields
+      },
+      category: {
+        select: categoryFields
       }
     }
   })
@@ -164,7 +172,8 @@ export const createWork = async (req: Request, res: Response): Promise<void> => 
       content: req.body.content,
       imgSrc: req.body.imgSrc,
       userId: res.locals.currentUser.id,
-      categoryId: categoryId
+      categoryId: categoryId,
+      time: req.body.time,
     }
   })
   res.json(work)
@@ -182,7 +191,8 @@ export const updateWork = async (req: Request, res: Response): Promise<void> => 
       content: req.body.content,
       imgSrc: req.body.imgSrc,
       userId: res.locals.currentUser.id,
-      categoryId: categoryId
+      categoryId: categoryId,
+      time: req.body.time,
     }
   })
   res.json(updateWork)

@@ -1,6 +1,11 @@
 import { type Request, type Response } from 'express'
 import prisma from '../utils/prisma'
 
+export const categoryFields = {
+  id: true,
+  name: true,
+}
+
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   const categories = await prisma.category.findMany({
     orderBy: [
