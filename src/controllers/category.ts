@@ -3,7 +3,9 @@ import prisma from '../utils/prisma'
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
   const categories = await prisma.category.findMany({
-    orderBy: { id: 'desc' }
+    orderBy: [
+      { orderIndex: 'asc' }, 
+      { id: 'asc' }]
   })
   res.json(categories)
 }

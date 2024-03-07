@@ -9,6 +9,7 @@ import { checkLogin } from './middlewares/checkLogin'
 import * as files from './controllers/files'
 import multer from 'multer'
 import * as path from 'path'
+import 'express-async-errors';
 
 const app = express()
 
