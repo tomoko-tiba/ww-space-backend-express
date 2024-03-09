@@ -62,6 +62,7 @@ router.get('/works/:id', works.getWorkById)
 
 router.post('/works', checkLogin, works.createWork)
 router.put('/works/:id', checkLogin, works.updateWork)
+router.delete('/works/:id', checkLogin, works.deleteWork)
 
 // 点赞
 router.put('/works/:id/like', works.like)
