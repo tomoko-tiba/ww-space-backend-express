@@ -171,6 +171,7 @@ export const getWorkById = async (req: Request, res: Response): Promise<void> =>
 
 export const createWork = async (req: Request, res: Response): Promise<void> => {
   const categoryId = Number(req.body.categoryId)
+  const orderIndex = Number(req.body.orderIndex)
   const work = await prisma.work.create({
     data: {
       title: req.body.title,
@@ -179,7 +180,7 @@ export const createWork = async (req: Request, res: Response): Promise<void> => 
       userId: res.locals.currentUser.id,
       categoryId: categoryId,
       time: req.body.time,
-      orderIndex: req.body.orderIndex,
+      orderIndex: orderIndex,
     }
   })
   res.json(work)
@@ -187,6 +188,7 @@ export const createWork = async (req: Request, res: Response): Promise<void> => 
 
 export const updateWork = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
+  const orderIndex = Number(req.body.orderIndex)
   const categoryId = Number(req.body.categoryId)
   const updateWork = await prisma.work.update({
     where: {
@@ -199,6 +201,7 @@ export const updateWork = async (req: Request, res: Response): Promise<void> => 
       userId: res.locals.currentUser.id,
       categoryId: categoryId,
       time: req.body.time,
+      orderIndex: orderIndex,
     }
   })
   res.json(updateWork)
