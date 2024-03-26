@@ -35,6 +35,7 @@ model Work {
   user        User     @relation(fields: [userId], references: [id])
   categoryId  Int?
   category    Category? @relation(fields: [categoryId], references: [id])
+  orderIndex Int?
 }
 
 model Category{

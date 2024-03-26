@@ -28,6 +28,7 @@ type WorkByQuery = {
   userId: number
   categoryId: number | null
   time: string | null
+  orderIndex: number | null
 }
 
 // 与前端约定的参数，类型一般叫做“VO”，View Object 的意思
@@ -44,6 +45,7 @@ interface WorkVO {
   categoryName?: string
   categoryId: number | null
   time: string | null
+  orderIndex: number | null
 }
 
 const toFeObj = (o: WorkByQuery): WorkVO => {
@@ -59,7 +61,8 @@ const toFeObj = (o: WorkByQuery): WorkVO => {
     views: o.views,
     time: o.time,
     categoryName: o.category?.name,
-    categoryId: o.categoryId
+    categoryId: o.categoryId,
+    orderIndex: o.orderIndex
   }
 }
 /*
@@ -109,7 +112,9 @@ export const getWorksByPages = async (req: Request, res: Response): Promise<void
         select: categoryFields
       }
     },
-    orderBy: { createdAt: 'asc' }
+    orderBy: [
+      { orderIndex: 'asc' }, 
+      { createdAt: 'asc' }]
   })
 
   const count = await prisma.work.count({
@@ -174,6 +179,7 @@ export const createWork = async (req: Request, res: Response): Promise<void> => 
       userId: res.locals.currentUser.id,
       categoryId: categoryId,
       time: req.body.time,
+      orderIndex: req.body.orderIndex,
     }
   })
   res.json(work)
