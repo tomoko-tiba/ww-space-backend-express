@@ -112,9 +112,10 @@ export const getWorksByPages = async (req: Request, res: Response): Promise<void
         select: categoryFields
       }
     },
-    orderBy: [
-      { orderIndex: 'asc' }, 
-      { createdAt: 'asc' }]
+    orderBy: [ 
+      { createdAt: 'asc' },
+      { orderIndex: 'asc' }
+    ]
   })
 
   const count = await prisma.work.count({

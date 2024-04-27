@@ -43,7 +43,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }))
 app.use(express.json({ limit: '10mb' }))
 
 app.use(session({
-  secret: 'your-secret-key', // 替换为您自己的秘密密钥
+  secret: process.env.SESSION_SECRET_KEY as string, // 替换为您自己的秘密密钥
   resave: false,
   saveUninitialized: true
 }))
